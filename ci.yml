@@ -14,7 +14,8 @@ Profiles:
       tools:
         - python: 2.7.18
     build:
-      command: python setup.py bdist_wheel
+      command: bash build.sh
+      release: false
 
   - profile:
     name: publish
@@ -24,4 +25,5 @@ Profiles:
       tools:
         - python: 2.7.18
     build:
-      command: python setup.py bdist_wheel
+      command: bash build.sh
+      release: true
