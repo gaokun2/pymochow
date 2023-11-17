@@ -64,7 +64,7 @@ def sign(credentials, http_method, path, headers, params,
     """
     Create the authorization
     """
-
+    """
     _logger.debug('Sign params: %s %s %s %s %d %d %s' % (
         http_method, path, headers, params, timestamp, expiration_in_seconds, headers_to_sign))
 
@@ -99,5 +99,8 @@ def sign(credentials, http_method, path, headers, params,
 
     _logger.debug('sign_key=[%s] sign_string=[%d bytes][ %s ]' %
                   (sign_key, len(string_to_sign), string_to_sign))
+    """
+    result = b'Bearer account=%s&api_key=%s' % (credentials.account,
+            credentials.api_key)
     _logger.debug('result=%s' % result)
     return result

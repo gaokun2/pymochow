@@ -22,7 +22,7 @@ class BceCredentials(object):
     Provides access to the BCE credentials used for accessing BCE services:
     BCE access key ID and secret access key.
     """
-    def __init__(self, access_key_id, secret_access_key):
+    def __init__(self, account, api_key):
         """初始化实例对象
         
         Args:
@@ -35,5 +35,5 @@ class BceCredentials(object):
         Raises:
             Exception: 无效的访问密钥或密钥密钥。
         """
-        self.access_key_id = compat.convert_to_bytes(access_key_id)
-        self.secret_access_key = compat.convert_to_bytes(secret_access_key)
+        self.account = compat.convert_to_bytes(account)
+        self.api_key = compat.convert_to_bytes(api_key)
