@@ -53,7 +53,76 @@ class MochowClient(BceBaseClient):
         """
         return self._send_request(http_methods.DELETE,
                 resource="database",
-                params={b'database': database_name})
+                params={b'database': database_name},
+                config=config)
+
+    def create_table(self, database_name, table_name, description=None, replication=3,
+            partition=None, fields=None, indexes=None, config=None):
+        """
+        create table
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        body["replication"] = replication
+        
+        if description is not None:
+            body["description"] = description
+        
+        if partition is not None:
+            body["partition"] = partition
+        
+        body["schema"] = {}
+        if fields is not None:
+            body["schema"]["fields"] = fields
+        
+        if indexes is not None:
+            body["schema"]["indexes"] = indexes
+
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+
+        return self._send_request(http_methods.POST,
+                resource="table",
+                body=json_body,
+                config=config)
+    
+    def list_tables(self, database_name, config=None):
+        """
+        list table
+        """
+        return self._send_request(http_methods.POST,
+                resource="table",
+                params={
+                    b'list': b"",
+                    b'database': database_name},
+                config=config)
+
+    def drop_table(self, database_name, table_name, config=None):
+        """
+        drop table
+        """
+        return self._send_request(http_methods.DELETE,
+                resource="table",
+                params={
+                    b'database': database_name,
+                    b'table': table_name},
+                config=config)
+
+    def desc_table(self, database_name, table_name, config=None):
+        """
+        desc table
+        """
+        return self._send_request(http_methods.POST,
+                resource="table",
+                params={
+                    b'desc': b'',
+                    b'database': database_name,
+                    b'table': table_name},
+                config=config)
 
     def _merge_config(self, config):
         """合并配置。
