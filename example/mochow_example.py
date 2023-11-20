@@ -33,14 +33,11 @@ if __name__ == "__main__":
     #               database operation examples
     ######################################################################################################
     database_name = "db-test"
-    database_exist = False
     response = mochow_client.list_databases()
     for database in response.databases:
-        if (database == database_name):
-            database_exist = True
-        __logger.debug("list databases:%s", database)
-
-    if database_exist:
+        list_tables_response = mochow_client.list_tables(database)
+        for table in list_tables_response.tables:
+            mochow_client.drop_table(database, table)
         mochow_client.drop_database(database_name)
 
     __logger.debug("try to create database:%s", database_name)
@@ -124,4 +121,8 @@ if __name__ == "__main__":
             "vector": random_vector
         }
     ]
-    response = mochow_client.insert_row(database_name, table_name, rows)
+    try:
+        response = mochow_client.insert_row(database_name, table_name, rows)
+    except Exception as e:
+        __logger.debug("exception:%s", e)
+    __logger.debug("response:%s", response)
