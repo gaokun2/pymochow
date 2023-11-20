@@ -124,6 +124,30 @@ class MochowClient(BceBaseClient):
                     b'table': table_name},
                 config=config)
 
+    def insert_row(self, database_name, table_name, rows, config=None):
+        """
+        insert row
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        
+        if rows is not None:
+            body["rows"] = rows
+        else:
+            raise Exception("param rows not defined")
+        
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "row",
+                body = json_body,
+                config=config)
+
     def _merge_config(self, config):
         """合并配置。
         

@@ -3,8 +3,22 @@ Examples for mochow client
 """
 
 import json
+import random
 import mochow_example_conf
 from baidubce.services.mochow.mochow_client import MochowClient
+
+book_names = ["The Great Gatsby", "To Kill a Mockingbird", "1984", "Pride and Prejudice", "The Catcher in the Rye"]
+authors = ["F. Scott Fitzgerald", "Harper Lee", "George Orwell", "Jane Austen", "J.D. Salinger"]
+
+def generate_random_vector(dimension):
+    """
+    generate_random_vector
+    """
+    if dimension <= 0:
+        raise ValueError("dimension error")
+
+    random_vector = [random.uniform(0, 1) for _ in range(dimension)]
+    return random_vector
 
 if __name__ == "__main__":
     import logging
@@ -96,4 +110,18 @@ if __name__ == "__main__":
     
     response = mochow_client.desc_table(database_name, table_name)
     __logger.debug("desc table:%s %s", table_name, response)
-
+    
+    ######################################################################################################
+    #               row operation examples
+    ######################################################################################################
+    book_name = random.choice(book_names)
+    author = random.choice(authors)
+    random_vector = generate_random_vector(768)
+    rows = [
+        {
+            "bookName": book_name,
+            "author": author,
+            "vector": random_vector
+        }
+    ]
+    response = mochow_client.insert_row(database_name, table_name, rows)
