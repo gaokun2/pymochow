@@ -2,6 +2,7 @@
 Examples for mochow client
 """
 
+import time
 import json
 import random
 import mochow_example_conf
@@ -111,6 +112,7 @@ if __name__ == "__main__":
     ######################################################################################################
     #               row operation examples
     ######################################################################################################
+    time.sleep(50)
     book_name = random.choice(book_names)
     author = random.choice(authors)
     random_vector = generate_random_vector(768)

@@ -56,8 +56,8 @@ class MochowClient(BceBaseClient):
                 params={b'database': database_name},
                 config=config)
 
-    def create_table(self, database_name, table_name, description=None, replication=3,
-            partition=None, fields=None, indexes=None, config=None):
+    def create_table(self, database_name, table_name, description=None,
+            replication=1, partition=None, fields=None, indexes=None, config=None):
         """
         create table
         """
