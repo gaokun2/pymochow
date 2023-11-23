@@ -24,7 +24,7 @@ def generate_random_vector(dimension):
 if __name__ == "__main__":
     import logging
     
-    logging.basicConfig(filename='example.log', level=logging.DEBUG,
+    logging.basicConfig(filename='example.log', level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     __logger = logging.getLogger(__name__)
 
@@ -113,18 +113,27 @@ if __name__ == "__main__":
     #               row operation examples
     ######################################################################################################
     time.sleep(50)
-    book_name = random.choice(book_names)
-    author = random.choice(authors)
-    random_vector = generate_random_vector(768)
-    rows = [
-        {
-            "bookName": book_name,
-            "author": author,
-            "vector": random_vector
-        }
-    ]
-    try:
-        response = mochow_client.insert_row(database_name, table_name, rows)
-    except Exception as e:
-        __logger.debug("exception:%s", e)
-    __logger.debug("response:%s", response)
+    for i in range(1000):
+        __logger.info("insert row %s", i)
+        book_name = random.choice(book_names)
+        author = random.choice(authors)
+        random_vector = generate_random_vector(768)
+        rows = [
+            {
+                "bookName": book_name,
+                "author": author,
+                "vector": random_vector
+            }
+        ]
+        try:
+            response = mochow_client.insert_row(database_name, table_name, rows)
+        except Exception as e:
+            __logger.debug("exception:%s", e)
+        __logger.debug("response:%s", response)
+    
+    ######################################################################################################
+    #               rebuild vector index
+    ######################################################################################################
+    """
+    mochow_client.build_vector_index(database_name, table_name, "vector_idx")
+    """

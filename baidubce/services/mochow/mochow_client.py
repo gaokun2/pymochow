@@ -147,6 +147,18 @@ class MochowClient(BceBaseClient):
                 resource = "row",
                 body = json_body,
                 config=config)
+    
+    def rebuild_vector_index(self, database_name, table_name, index_name, config=None):
+        """
+        rebuild_vector_index
+        """
+        return self._send_request(http_methods.POST,
+                resource="index",
+                body=json.dumps({"database": database_name,
+                    "table": table_name,
+                    "index": index_name}),
+                params={b'rebuild': b''},
+                config=config)
 
     def _merge_config(self, config):
         """合并配置。
