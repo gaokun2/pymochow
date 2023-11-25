@@ -128,12 +128,18 @@ if __name__ == "__main__":
         try:
             response = mochow_client.insert_row(database_name, table_name, rows)
         except Exception as e:
-            __logger.debug("exception:%s", e)
-        __logger.debug("response:%s", response)
+            __logger.info("exception:%s", e)
+        __logger.info("response:%s", response)
     
     ######################################################################################################
     #               rebuild vector index
     ######################################################################################################
-    """
-    mochow_client.build_vector_index(database_name, table_name, "vector_idx")
-    """
+    response = mochow_client.rebuild_vector_index(database_name, table_name, "vector_idx")
+    __logger.info("rebuild vector index: %s", response)
+
+    while 1:
+        response = mochow_client.desc_index(database_name, table_name, "vector_idx")
+        __logger.info("desc index: %s", response)
+        time.sleep(10)
+        if response.index.status == u"NORMAL":
+            break

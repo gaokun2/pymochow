@@ -159,6 +159,20 @@ class MochowClient(BceBaseClient):
                     "index": index_name}),
                 params={b'rebuild': b''},
                 config=config)
+    
+    def desc_index(self, database_name, table_name, index_name, config=None):
+        """
+        desc index
+        """
+        return self._send_request(http_methods.POST,
+                resource="index",
+                params={
+                    b'desc': b'',
+                    b'database': database_name,
+                    b'table': table_name,
+                    b'index': index_name
+                },
+                config=config)
 
     def _merge_config(self, config):
         """合并配置。
