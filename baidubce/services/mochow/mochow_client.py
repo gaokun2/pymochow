@@ -45,6 +45,7 @@ class MochowClient(BceBaseClient):
         return self._send_request(http_methods.POST, 
                 resource="database", 
                 body=json.dumps({'database': database_name}),
+                params={b'create': b''},
                 config=config)
     
     def drop_database(self, database_name, config=None):
@@ -87,6 +88,7 @@ class MochowClient(BceBaseClient):
 
         return self._send_request(http_methods.POST,
                 resource="table",
+                params={b'create': b''},
                 body=json_body,
                 config=config)
     
@@ -96,9 +98,8 @@ class MochowClient(BceBaseClient):
         """
         return self._send_request(http_methods.POST,
                 resource="table",
-                params={
-                    b'list': b"",
-                    b'database': database_name},
+                params={b'list': b""},
+                body=json.dumps({'database': database_name}),
                 config=config)
 
     def drop_table(self, database_name, table_name, config=None):
@@ -118,10 +119,33 @@ class MochowClient(BceBaseClient):
         """
         return self._send_request(http_methods.POST,
                 resource="table",
-                params={
-                    b'desc': b'',
-                    b'database': database_name,
-                    b'table': table_name},
+                params={b'desc': b''},
+                body=json.dumps({'database': database_name,
+                    'table': table_name}),
+                config=config)
+    
+    def table_add_field(self, database_name, table_name, fields, config=None):
+        """
+        table add field
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        if fields is not None:
+            body["schema"]["fields"] = fields
+        else:
+            raise Exception("param fields not defined")
+
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "table",
+                body = json_body,
+                params={b'addField': b''},
                 config=config)
 
     def insert_row(self, database_name, table_name, rows, config=None):
@@ -146,8 +170,119 @@ class MochowClient(BceBaseClient):
         return self._send_request(http_methods.POST,
                 resource = "row",
                 body = json_body,
+                params={b'insert': b''},
                 config=config)
     
+    def query_row(self, database_name, table_name, primary_key,
+            partition_key=None, projections=None, cretrieve_vector=False, 
+            config=None):
+        """
+        query row
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        body["primaryKey"] = primary_key
+        if partition_key is not None:
+            body["partitionKey"] = partition_key
+        if projections is not None:
+            body["projections"] = projections
+        body["retrieveVector"] = cretrieve_vector
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "row",
+                body = json_body,
+                params={b'query': b''},
+                config=config)
+
+    
+    def search_row(self, database_name, table_name, vector, search_params, 
+            partition_key=None, search_filter="", projections=None,
+            retrieve_vector=False, config=None):
+        """
+        search row
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        body["vectorField"] = vector
+        body["params"] = search_params
+        if partition_key is not None:
+            body["partitionKey"] = partition_key
+        body["filter"] = search_filter
+        body["projections"] = projections
+        body["retrieveVector"] = retrieve_vector
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "row",
+                body = json_body,
+                params={b'search': b''},
+                config=config)
+
+    def create_index(self, database_name, table_name, indexes, config=None):
+        """
+        create index
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        body["indexes"] = indexes
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "index",
+                body = json_body,
+                params={b'create': b''},
+                config=config)
+    
+    def modify_index(self, database_name, table_name, index_name, auto_rebuild, 
+            config=None):
+        """
+        modify index
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        body["index"]["indexName"] = index_name
+        body["index"]["autoBuild"] = auto_rebuild
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "index",
+                body = json_body,
+                params={b'modify': b''},
+                config=config)
+    
+    def drop_index(self, database_name, table_name, index_name, config=None):
+        """
+        drop index
+        """
+        return self._send_request(http_methods.DELETE,
+                resource="index",
+                params={
+                    b'database': database_name,
+                    b'table': table_name,
+                    b'indexName': index_name},
+                config=config)
+        
     def rebuild_vector_index(self, database_name, table_name, index_name, config=None):
         """
         rebuild_vector_index
@@ -156,7 +291,7 @@ class MochowClient(BceBaseClient):
                 resource="index",
                 body=json.dumps({"database": database_name,
                     "table": table_name,
-                    "index": index_name}),
+                    "indexName": index_name}),
                 params={b'rebuild': b''},
                 config=config)
     
@@ -166,12 +301,12 @@ class MochowClient(BceBaseClient):
         """
         return self._send_request(http_methods.POST,
                 resource="index",
-                params={
-                    b'desc': b'',
-                    b'database': database_name,
-                    b'table': table_name,
-                    b'index': index_name
-                },
+                params={b'desc': b''},
+                body=json.dumps({
+                    'database': database_name,
+                    'table': table_name,
+                    'indexName': index_name
+                }),
                 config=config)
 
     def _merge_config(self, config):

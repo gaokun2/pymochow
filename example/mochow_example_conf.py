@@ -9,7 +9,7 @@ import logging
 from baidubce.bce_client_configuration import BceClientConfiguration
 from baidubce.auth.bce_credentials import BceCredentials
 
-HOST = 'http://127.0.0.1:9088'
+HOST = 'http://127.0.0.1:8099'
 ACCOUNT = 'root'
 API_KEY = 'root'
 

@@ -24,7 +24,7 @@ def generate_random_vector(dimension):
 if __name__ == "__main__":
     import logging
     
-    logging.basicConfig(filename='example.log', level=logging.INFO,
+    logging.basicConfig(filename='example.log', level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     __logger = logging.getLogger(__name__)
 
@@ -131,6 +131,19 @@ if __name__ == "__main__":
             __logger.info("exception:%s", e)
         __logger.info("response:%s", response)
     
+    for i in range(100):
+        j = random.randint(0, 9)
+        __logger.info("query row %s for tp %s", i, j)
+        row_id = (j << 40) + i
+        primary_key = {
+            "id": row_id
+        }
+        try:
+            response = mochow_client.query_row(database_name, table_name,
+                    primary_key)
+        except Exception as e:
+            __logger.info("exception:%s", e)
+        __logger.info("response:%s", response)
     ######################################################################################################
     #               rebuild vector index
     ######################################################################################################
