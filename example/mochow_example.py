@@ -113,6 +113,7 @@ if __name__ == "__main__":
     #               row operation examples
     ######################################################################################################
     time.sleep(50)
+    ## insert row
     for i in range(1000):
         __logger.info("insert row %s", i)
         book_name = random.choice(book_names)
@@ -130,7 +131,8 @@ if __name__ == "__main__":
         except Exception as e:
             __logger.info("exception:%s", e)
         __logger.info("response:%s", response)
-    
+
+    # query row
     for i in range(100):
         j = random.randint(0, 9)
         __logger.info("query row %s for tp %s", i, j)
@@ -141,6 +143,45 @@ if __name__ == "__main__":
         try:
             response = mochow_client.query_row(database_name, table_name,
                     primary_key)
+        except Exception as e:
+            __logger.info("exception:%s", e)
+        __logger.info("response:%s", response)
+
+    ## update row
+    for i in range(100):
+        j = random.randint(0, 9)
+        __logger.info("update row %s for tp %s", i, j)
+        row_id = (j << 40) + i
+        primary_key = {
+            "id": row_id
+        }
+        partition_key = {
+            "id": row_id
+        }
+        update = {
+            "bookName": random.choice(book_names),
+            "author": random.choice(authors),
+        }
+        try:
+            response = mochow_client.update_row(database_name, table_name,
+                    primary_key, partition_key, update)
+        except Exception as e:
+            __logger.info("exception:%s", e)
+        __logger.info("response:%s", response)
+    
+    ## delete row
+    for i in range(100):
+        j = random.randint(0, 9)
+        __logger.info("delete row %s for tp %s", i, j)
+        row_id = (j << 40) + i
+        primary_key = {
+            "id": row_id
+        }
+        partition_key = {
+            "id": row_id
+        }
+        try:
+            response = mochow_client.delete_row(database_name, table_name, primary_key, partition_key)
         except Exception as e:
             __logger.info("exception:%s", e)
         __logger.info("response:%s", response)

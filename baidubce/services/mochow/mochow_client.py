@@ -172,6 +172,49 @@ class MochowClient(BceBaseClient):
                 body = json_body,
                 params={b'insert': b''},
                 config=config)
+
+    def delete_row(self, database_name, table_name, primaryKey, partitionKey, config=None):
+        """
+        delete row
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        body["primaryKey"] = primaryKey
+        body["partitionKey"] = partitionKey
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "row",
+                body = json_body,
+                params={b'delete': b''},
+                config=config)
+
+    def update_row(self, database_name, table_name, primaryKey, partitionKey, update, config=None):
+        """
+        update row
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        body["primaryKey"] = primaryKey
+        body["partitionKey"] = partitionKey
+        body["update"] = update
+        try:
+            json_body = json.dumps(body, indent=4)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource = "row",
+                body = json_body,
+                params={b'update': b''},
+                config=config)
     
     def query_row(self, database_name, table_name, primary_key,
             partition_key=None, projections=None, cretrieve_vector=False, 
@@ -201,8 +244,7 @@ class MochowClient(BceBaseClient):
                 config=config)
 
     
-    def search_row(self, database_name, table_name, vector, search_params, 
-            partition_key=None, search_filter="", projections=None,
+    def search_row(self, database_name, table_name, anns, partitionKey, projections=None,
             retrieve_vector=False, config=None):
         """
         search row
@@ -210,12 +252,10 @@ class MochowClient(BceBaseClient):
         body = {}
         body["database"] = database_name
         body["table"] = table_name
-        body["vectorField"] = vector
-        body["params"] = search_params
-        if partition_key is not None:
-            body["partitionKey"] = partition_key
-        body["filter"] = search_filter
-        body["projections"] = projections
+        body["anns"] = anns
+        body["partitionKey"] = partitionKey
+        if projections is not None:
+            body["projections"] = projections
         body["retrieveVector"] = retrieve_vector
         try:
             json_body = json.dumps(body, indent=4)
