@@ -39,7 +39,7 @@ if __name__ == "__main__":
         list_tables_response = mochow_client.list_tables(database)
         for table in list_tables_response.tables:
             mochow_client.drop_table(database, table)
-        mochow_client.drop_database(database_name)
+        mochow_client.drop_database(database)
 
     __logger.debug("try to create database:%s", database_name)
     response = mochow_client.create_database(database_name)
@@ -170,6 +170,7 @@ if __name__ == "__main__":
         __logger.info("response:%s", response)
     
     ## delete row
+    """
     for i in range(100):
         j = random.randint(0, 9)
         __logger.info("delete row %s for tp %s", i, j)
@@ -185,6 +186,8 @@ if __name__ == "__main__":
         except Exception as e:
             __logger.info("exception:%s", e)
         __logger.info("response:%s", response)
+    """
+
     ######################################################################################################
     #               rebuild vector index
     ######################################################################################################
@@ -195,5 +198,18 @@ if __name__ == "__main__":
         response = mochow_client.desc_index(database_name, table_name, "vector_idx")
         __logger.info("desc index: %s", response)
         time.sleep(10)
-        if response.index.status == u"NORMAL":
+        if response.index.state == u"NORMAL":
             break
+
+    ######################################################################################################
+    #               search row
+    ######################################################################################################
+    anns = {
+        "vectorField": "vector",
+        "vectorFloats": generate_random_vector(768),
+        "params": {
+            "ef": 100,
+            "limit": 10
+        }
+    }
+    response = mochow_client.search_row(database_name, table_name, anns)
