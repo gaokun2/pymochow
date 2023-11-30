@@ -124,13 +124,14 @@ class MochowClient(BceBaseClient):
                     'table': table_name}),
                 config=config)
     
-    def table_add_field(self, database_name, table_name, fields, config=None):
+    def add_table_field(self, database_name, table_name, fields, config=None):
         """
         table add field
         """
         body = {}
         body["database"] = database_name
         body["table"] = table_name
+        body["schema"] = {}
         if fields is not None:
             body["schema"]["fields"] = fields
         else:
@@ -242,9 +243,9 @@ class MochowClient(BceBaseClient):
                 body = json_body,
                 params={b'query': b''},
                 config=config)
-
     
-    def search_row(self, database_name, table_name, anns, partitionKey, projections=None,
+    def search_row(self, database_name, table_name, anns, 
+            partition_key=None, projections=None,
             retrieve_vector=False, config=None):
         """
         search row
@@ -253,7 +254,8 @@ class MochowClient(BceBaseClient):
         body["database"] = database_name
         body["table"] = table_name
         body["anns"] = anns
-        body["partitionKey"] = partitionKey
+        if partition_key is not None:
+            body["partitionKey"] = partition_key
         if projections is not None:
             body["projections"] = projections
         body["retrieveVector"] = retrieve_vector
