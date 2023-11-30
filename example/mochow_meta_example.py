@@ -93,6 +93,8 @@ def create_table(database_name, table_name):
             partition=partition, fields=fields, indexes=indexes)
     if response.code != 0:
         __logger.error("fail to create table:%s", response)
+    response = mochow_client.desc_table(database_name, table_name)
+    __logger.debug("desc table:%s %s", table_name, response)
 
 
 def add_field(database_name, table_name):
@@ -111,6 +113,53 @@ def add_field(database_name, table_name):
             fields=fields)
     if response.code != 0:
         __logger.error("fail to add field:%s", response)
+    response = mochow_client.desc_table(database_name, table_name)
+    __logger.debug("desc table:%s %s", table_name, response)
+
+
+def create_index(database_name, table_name):
+    """
+    create index
+    """
+    mochow_client = MochowClient(mochow_example_conf.config)
+    response = mochow_client.desc_table(database_name, table_name)
+    if response.code != 0:
+        __logger.error("fail to desc table:%s", response)
+        return
+    index_field = ""
+    for field in response.table.schema.fields:
+        if not field.primary_key and field.field_type != "FLOAT_VECTOR" \
+                and "vid" not in field.field_name:
+            index_field = field.field_name
+            break
+    index_name = index_field + "_idx"
+    indexes = [{
+        "indexName": index_name,
+        "indexType": "SECONDARY",
+        "fields": [index_field]
+    }]
+    response = mochow_client.create_index(database_name, table_name, indexes)
+    if response.code != 0:
+        __logger.error("fail to create index:%s", response)
+
+
+def drop_indexes(database_name, table_name):
+    """
+    drop indexes
+    """
+    mochow_client = MochowClient(mochow_example_conf.config)
+    response = mochow_client.desc_table(database_name, table_name)
+    if response.code != 0:
+        __logger.error("fail to desc table:%s", response)
+        return
+    for index in response.table.schema.indexes:
+        response = mochow_client.drop_index(database_name, table_name,
+                index.index_name)
+        if response.code != 0:
+            __logger.error("fail to drop index:%s", response)
+    response = mochow_client.desc_table(database_name, table_name)
+    __logger.debug("show table after drop index:%s", response)
+
 
 
 if __name__ == "__main__":
@@ -121,3 +170,5 @@ if __name__ == "__main__":
     create_database(database_name)
     create_table(database_name, table_name)
     add_field(database_name, table_name)
+    create_index(database_name, table_name)
+    drop_indexes(database_name, table_name)
