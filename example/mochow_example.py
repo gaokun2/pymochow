@@ -170,7 +170,6 @@ if __name__ == "__main__":
         __logger.info("response:%s", response)
     
     ## delete row
-    """
     for i in range(100):
         j = random.randint(0, 9)
         __logger.info("delete row %s for tp %s", i, j)
@@ -186,7 +185,6 @@ if __name__ == "__main__":
         except Exception as e:
             __logger.info("exception:%s", e)
         __logger.info("response:%s", response)
-    """
 
     ######################################################################################################
     #               rebuild vector index
@@ -200,7 +198,6 @@ if __name__ == "__main__":
         time.sleep(10)
         if response.index.state == u"NORMAL":
             break
-
     ######################################################################################################
     #               search row
     ######################################################################################################
@@ -213,3 +210,4 @@ if __name__ == "__main__":
         }
     }
     response = mochow_client.search_row(database_name, table_name, anns)
+    __logger.info("search result: %s", response)
