@@ -136,7 +136,7 @@ def create_index(database_name, table_name):
     indexes = [{
         "indexName": index_name,
         "indexType": "SECONDARY",
-        "fields": [index_field]
+        "field": index_field
     }]
     response = mochow_client.create_index(database_name, table_name, indexes)
     if response.code != 0:
