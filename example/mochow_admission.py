@@ -150,7 +150,7 @@ if __name__ == "__main__":
     
     # query row
     for i in range(100):
-        j = random.randint(0, tablet)
+        j = random.randint(0, tablet - 1)
         #j = 0
         __logger.info("query row %s for tp %s", i, j)
         row_id = (j << 40) + i
