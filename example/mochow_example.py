@@ -33,7 +33,7 @@ if __name__ == "__main__":
     ######################################################################################################
     #               database operation examples
     ######################################################################################################
-    database_name = "db-test"
+    database_name = "db_test"
     response = mochow_client.list_databases()
     for database in response.databases:
         list_tables_response = mochow_client.list_tables(database)
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     ######################################################################################################
     #               table operation examples
     ######################################################################################################
-    table_name = "book-vector"
+    table_name = "book_vector"
    
     table_exist = False
     response = mochow_client.list_tables(database_name)

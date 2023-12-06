@@ -44,7 +44,7 @@ if __name__ == "__main__":
     ######################################################################################################
     
     while True:
-        database_name = "db-test-" + generate_random_string(5);
+        database_name = "db_test_" + generate_random_string(5);
         response = mochow_client.list_databases()
         __logger.info("list databases response:%s", response)
         database_exist = False
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     #               table operation examples
     ######################################################################################################
     while True:
-        table_name = "table-test-" + generate_random_string(5);
+        table_name = "table_test_" + generate_random_string(5);
         response = mochow_client.list_tables(database_name)
         __logger.info("list tables:%s", response)
         table_exist = False
