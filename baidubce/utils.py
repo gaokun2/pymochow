@@ -31,7 +31,7 @@ try:
     from urllib.parse import urlparse
 except ImportError:
     from urlparse import urlparse
-from Crypto.Cipher import AES
+#from Crypto.Cipher import AES
 import baidubce
 from baidubce.http import http_headers
 
@@ -538,15 +538,8 @@ def aes128_encrypt_16char_key(adminpass, secretkey):
     cipheradminpass = cryptor.encrypt(pad_it(adminpass)).encode('hex')
     return cipheradminpass
 """
-
-
+"""
 def aes128_encrypt_16char_key(adminpass, secretkey):
-    """
-
-    :param adminpass: adminpass
-    :param secretkey: secretkey
-    :return: cipheradminpass
-    """
 
     # Python3: encrypt admin password by AES128
 
@@ -568,6 +561,7 @@ def aes128_encrypt_16char_key(adminpass, secretkey):
     #print(cipheradminpass)
 
     return cipheradminpass
+"""
 
 def is_cname_like_host(host):
     """

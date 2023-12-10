@@ -227,8 +227,8 @@ def send_request(
         
             conn = _get_connection(protocol, host, port, config.connection_timeout_in_mills, 
                                    config.proxy_host, config.proxy_port)
-            _logger.debug('request args:method=%s, uri=%s, headers=%s,patams=%s, body=%s',
-                    http_method, uri, headers, params, body)
+            _logger.debug('request args:method=%s, uri=%s, headers=%s, patams=%s',
+                    http_method, uri, headers, params)
 
             http_response = _send_http_request(
                 conn, http_method, uri, headers, body, config.send_buf_size)
