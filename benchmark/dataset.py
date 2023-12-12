@@ -149,7 +149,7 @@ class DatasetManager(BaseModel):
         log.info("Read the entire file into memory: {}".format(file_path))
         file = h5py.File(file_path, 'r')
         data = file["neighbors"][:]
-        return pd.DataFrame(data)
+        return pd.DataFrame(data).T
 
     def __iter__(self):
         """

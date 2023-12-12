@@ -139,11 +139,27 @@ def check_headers(headers):
             raise BceClientError(r'There should not be any "\n" in header[%s]:%s' % (k, v))
 
 
+def get_connection(config, use_backup_endpoint=False):
+    """get_connection"""
+
+    request_endpoint = config.endpoint
+    if use_backup_endpoint:
+        request_endpoint = config.backup_endpoint
+
+    protocol, host, port = utils.parse_host_port(request_endpoint, config.protocol)
+
+    conn = _get_connection(protocol, host, port, config.connection_timeout_in_mills, 
+                           config.proxy_host, config.proxy_port)
+    return conn
+
+
 def send_request(
         config,
+        conn,
         sign_function,
         response_handler_functions,
-        http_method, path, body, headers, params, use_backup_endpoint=False):
+        http_method, path, body, headers, params, 
+        use_backup_endpoint=False, keep_alive=True):
     """
     Send request to BCE services.
 
@@ -180,6 +196,9 @@ def send_request(
         request_endpoint = config.backup_endpoint
 
     headers[http_headers.HOST] = request_endpoint
+    
+    if keep_alive:
+        headers["Connection"] = "keep-alive"
 
     if isinstance(body, str):
         body = body.encode(baidubce.DEFAULT_ENCODING)
@@ -213,7 +232,6 @@ def send_request(
     retries_attempted = 0
     errors = []
     while True:
-        conn = None
         try:
             # restore the offset of fp body when retrying
             if should_get_new_date is True:
@@ -224,9 +242,10 @@ def send_request(
 
             if retries_attempted > 0 and offset is not None:
                 body.seek(offset)
-        
-            conn = _get_connection(protocol, host, port, config.connection_timeout_in_mills, 
-                                   config.proxy_host, config.proxy_port)
+            
+            if conn is None:
+                conn = _get_connection(protocol, host, port, config.connection_timeout_in_mills, 
+                        config.proxy_host, config.proxy_port)
             _logger.debug('request args:method=%s, uri=%s, headers=%s, patams=%s',
                     http_method, uri, headers, params)
 
@@ -261,6 +280,7 @@ def send_request(
         except Exception as e:
             if conn is not None:
                 conn.close()
+            conn = None
 
             # insert ">>>>" before all trace back lines and then save it
             errors.append('\n'.join('>>>>' + line for line in traceback.format_exc().splitlines()))

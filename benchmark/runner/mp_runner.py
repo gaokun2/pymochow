@@ -3,7 +3,7 @@ multi process runner
 """
 import time
 import traceback
-import concurrent
+import concurrent.futures
 import multiprocessing as mp
 import logging
 from typing import Iterable, List, Dict
@@ -56,6 +56,7 @@ class MultiProcessingSearchRunner:
 
         self.test_data = test_data
         log.debug(f"test dataset columns: {len(test_data)}")
+        self.db.connect()
 
     def search(self, test_data: List[List[float]], q: mp.Queue, cond: mp.Condition):
         """
@@ -74,7 +75,6 @@ class MultiProcessingSearchRunner:
         with cond:
             cond.wait()
 
-        self.db.init()
         num, idx = len(test_data), 0
 
         start_time = time.perf_counter()
@@ -197,4 +197,4 @@ class MultiProcessingSearchRunner:
         Raises:
             无异常抛出。
         """
-        pass
+        self.db.disconnect()

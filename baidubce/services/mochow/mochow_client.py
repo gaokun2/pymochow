@@ -4,7 +4,7 @@ This module provides a client class for Mochow
 
 import copy
 import http.client
-import json
+import orjson
 import logging
 
 import baidubce
@@ -27,6 +27,17 @@ class MochowClient(BceBaseClient):
         """
         """
         BceBaseClient.__init__(self, config)
+    
+    def connect(self, config=None):
+        """connect"""
+        config = self._merge_config(config)
+        self.conn = bce_http_client.get_connection(config)
+
+    def disconnect(self):
+        """disconnect"""
+        if self.conn is not None:
+            self.conn.close()
+        self.conn = None
 
     def list_databases(self, config=None):
         """
@@ -44,7 +55,7 @@ class MochowClient(BceBaseClient):
         """
         return self._send_request(http_methods.POST, 
                 resource="database", 
-                body=json.dumps({'database': database_name}),
+                body=orjson.dumps({'database': database_name}),
                 params={b'create': b''},
                 config=config)
     
@@ -81,7 +92,7 @@ class MochowClient(BceBaseClient):
             body["schema"]["indexes"] = indexes
 
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -99,7 +110,7 @@ class MochowClient(BceBaseClient):
         return self._send_request(http_methods.POST,
                 resource="table",
                 params={b'list': b""},
-                body=json.dumps({'database': database_name}),
+                body=orjson.dumps({'database': database_name}),
                 config=config)
 
     def drop_table(self, database_name, table_name, config=None):
@@ -120,7 +131,7 @@ class MochowClient(BceBaseClient):
         return self._send_request(http_methods.POST,
                 resource="table",
                 params={b'desc': b''},
-                body=json.dumps({'database': database_name,
+                body=orjson.dumps({'database': database_name,
                     'table': table_name}),
                 config=config)
     
@@ -138,7 +149,7 @@ class MochowClient(BceBaseClient):
             raise Exception("param fields not defined")
 
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -163,7 +174,7 @@ class MochowClient(BceBaseClient):
             raise Exception("param rows not defined")
         
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -184,7 +195,7 @@ class MochowClient(BceBaseClient):
         body["primaryKey"] = primaryKey
         body["partitionKey"] = partitionKey
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -206,7 +217,7 @@ class MochowClient(BceBaseClient):
         body["partitionKey"] = partitionKey
         body["update"] = update
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -218,7 +229,7 @@ class MochowClient(BceBaseClient):
                 config=config)
     
     def query_row(self, database_name, table_name, primary_key,
-            partition_key=None, projections=None, cretrieve_vector=False, 
+            partition_key=None, projections=None, retrieve_vector=False, 
             config=None):
         """
         query row
@@ -231,9 +242,9 @@ class MochowClient(BceBaseClient):
             body["partitionKey"] = partition_key
         if projections is not None:
             body["projections"] = projections
-        body["retrieveVector"] = cretrieve_vector
+        body["retrieveVector"] = retrieve_vector
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -246,7 +257,7 @@ class MochowClient(BceBaseClient):
     
     def search_row(self, database_name, table_name, anns, 
             partition_key=None, projections=None,
-            retrieve_vector=False, config=None):
+            retrieve_vector=False, config=None, keep_alive=False):
         """
         search row
         """
@@ -260,7 +271,7 @@ class MochowClient(BceBaseClient):
             body["projections"] = projections
         body["retrieveVector"] = retrieve_vector
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -269,7 +280,9 @@ class MochowClient(BceBaseClient):
                 resource = "row",
                 body = json_body,
                 params={b'search': b''},
-                config=config)
+                config=config,
+                conn=self.conn,
+                keep_alive=keep_alive)
 
     def create_index(self, database_name, table_name, indexes, config=None):
         """
@@ -280,7 +293,7 @@ class MochowClient(BceBaseClient):
         body["table"] = table_name
         body["indexes"] = indexes
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -302,7 +315,7 @@ class MochowClient(BceBaseClient):
         body["index"]["indexName"] = index_name
         body["index"]["autoBuild"] = auto_rebuild
         try:
-            json_body = json.dumps(body, indent=4)
+            json_body = orjson.dumps(body)
             _logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
@@ -331,7 +344,7 @@ class MochowClient(BceBaseClient):
         """
         return self._send_request(http_methods.POST,
                 resource="index",
-                body=json.dumps({"database": database_name,
+                body=orjson.dumps({"database": database_name,
                     "table": table_name,
                     "indexName": index_name}),
                 params={b'rebuild': b''},
@@ -344,7 +357,7 @@ class MochowClient(BceBaseClient):
         return self._send_request(http_methods.POST,
                 resource="index",
                 params={b'desc': b''},
-                body=json.dumps({
+                body=orjson.dumps({
                     'database': database_name,
                     'table': table_name,
                     'indexName': index_name
@@ -385,7 +398,9 @@ class MochowClient(BceBaseClient):
     def _send_request(
             self, http_method, resource=None, body=None, headers=None, params=None,
             config=None,
-            body_parser=None
+            body_parser=None,
+            conn=None,
+            keep_alive=False
             ):
         """
         发送HTTP请求函数
@@ -421,8 +436,10 @@ class MochowClient(BceBaseClient):
 
         try:
             return bce_http_client.send_request(
-                    config, bce_v1_signer.sign, [handler.parse_error, body_parser],
-                    http_method, path, body, headers, params)
+                    config, conn, bce_v1_signer.sign, 
+                    [handler.parse_error, body_parser],
+                    http_method, path, body, headers, params,
+                    keep_alive=keep_alive)
         except BceHttpClientError as e:
             raise e
 

@@ -47,6 +47,14 @@ class Mochow(VectorDB):
             api_key), endpoint=host)
         mochow_client = MochowClient(config)
         self.client = mochow_client
+    
+    def connect(self):
+        """connect"""
+        self.client.connect()
+
+    def disconnect(self):
+        """disconnect"""
+        self.client.disconnect()
 
     @contextmanager
     def init(self) -> None:
@@ -134,7 +142,7 @@ class Mochow(VectorDB):
             response = self.client.desc_index(self.db_name, self.table_name, self._index_name)
             log.info("desc index response%s", response)
             time.sleep(10)
-            if response.index.state == u"NORMAL":
+            if response.index['state'] == u"NORMAL":
                 break
 
     def need_normalize_cosine(self) -> bool:
@@ -172,8 +180,9 @@ class Mochow(VectorDB):
                 "limit": k
             }
         }
-        response = self.client.search_row(self.db_name, self.table_name, anns)
+        response = self.client.search_row(self.db_name, self.table_name, anns,
+                keep_alive=True)
         log.info("search response:%s", response)
-        ids = [int(item.id) for item in response.rows]
+        ids = [int(item['id']) for item in response.rows]
         return ids
 

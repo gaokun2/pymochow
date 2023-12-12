@@ -4,7 +4,7 @@ serial runner
 import time
 import logging
 import traceback
-import concurrent
+import concurrent.futures
 import multiprocessing as mp
 import math
 import psutil
@@ -71,7 +71,7 @@ class SerialInsertRunner:
                 log.info("normalize the 100k train data")
                 all_embeddings = emb_np / np.linalg.norm(emb_np, axis=1)[:, np.newaxis].tolist()
             else:
-                all_embeddings = emb_np.tolist()
+                all_embeddings = emb_np
             del(emb_np)
             log.info(f"batch dataset size: {len(all_embeddings)}, {len(all_metadata)}")
             last_batch = self.dataset.data.size - count == len(all_metadata)
@@ -173,6 +173,7 @@ class SerialSearchRunner:
         """
         log.info(f"{mp.current_process().name:14} start search the entire test_data to get recall and latency")
         self.db.init()
+        self.db.connect()
         test_data, ground_truth = args
 
         log.debug(f"test dataset size: {len(test_data)}")
@@ -204,6 +205,7 @@ class SerialSearchRunner:
                     f"({mp.current_process().name:14}) search_count={len(latencies):3}, "
                     f"latest_latency={latencies[-1]}, latest recall={recalls[-1]}")
 
+        self.db.disconnect()
         avg_latency = round(np.mean(latencies), 4)
         avg_recall = round(np.mean(recalls), 4)
         cost = round(np.sum(latencies), 4)

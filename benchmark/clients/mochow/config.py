@@ -9,9 +9,9 @@ class MochowConfig(DBConfig):
     """
     mochow config
     """
-    host = "http://localhost:19530"
-    account = "root"
-    api_key = "mcqlwzjtxsrbsj"
+    host: str = "http://localhost:19530"
+    account: str = "root"
+    api_key: str = "mcqlwzjtxsrbsj"
 
     def to_dict(self) -> dict:
         """
@@ -35,7 +35,7 @@ class MochowIndexConfig(BaseModel):
     """Base config for milvus"""
 
     index: IndexType
-    metric_type = MetricType.L2
+    metric_type: MetricType = MetricType.L2
 
     def parse_metric(self) -> str:
         """

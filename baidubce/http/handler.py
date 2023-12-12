@@ -17,7 +17,7 @@ This module provides general http handler functions for processing http response
 import http.client
 from builtins import str
 from builtins import bytes
-import json
+import orjson
 from baidubce import utils
 from baidubce import compat
 from baidubce.exception import BceClientError
@@ -39,7 +39,10 @@ def parse_json(http_response, response):
     body = http_response.read()
     if body:
         body = compat.convert_to_string(body)
-        response.__dict__.update(json.loads(body, object_hook=utils.dict_to_python_object).__dict__)
+        #response.__dict__.update(json.loads(body, object_hook=utils.dict_to_python_object).__dict__)
+        data = orjson.loads(body)
+        python_object = utils.dict_to_python_object(data)
+        response.__dict__.update(python_object.__dict__)
         response.__dict__["raw_data"] = body
     http_response.close()
     return True
@@ -67,7 +70,7 @@ def parse_error(http_response, response):
     bse = None
     body = http_response.read()
     if body:
-        d = json.loads(compat.convert_to_string(body))
+        d = orjson.loads(compat.convert_to_string(body))
         bse = BceServerError(d['msg'], code=d['code'])
     else:
         bse = BceServerError(http_response.reason, request_id=response.metadata.bce_request_id)
