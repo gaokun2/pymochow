@@ -160,7 +160,7 @@ class MochowClient(BceBaseClient):
                 params={b'addField': b''},
                 config=config)
 
-    def insert_row(self, database_name, table_name, rows, config=None):
+    def insert_row(self, database_name, table_name, rows, config=None, keep_alive=False):
         """
         insert row
         """
@@ -183,7 +183,34 @@ class MochowClient(BceBaseClient):
                 resource = "row",
                 body = json_body,
                 params={b'insert': b''},
-                config=config)
+                config=config,
+                keep_alive=keep_alive)
+    
+    def upsert_row(self, database_name, table_name, rows, config=None, keep_alive=False):
+        """
+        upsert row
+        """
+        body = {}
+        body["database"] = database_name
+        body["table"] = table_name
+        
+        if rows is not None:
+            body["rows"] = rows
+        else:
+            raise Exception("param rows not defined")
+        
+        try:
+            json_body = orjson.dumps(body)
+            _logger.debug("body: {}".format(json_body))
+        except Exception as e:
+            _logger.debug("e: {}".format(e))
+        
+        return self._send_request(http_methods.POST,
+                resource="row",
+                body=json_body,
+                params={b'upsert': b''},
+                config=config,
+                keep_alive=keep_alive)
 
     def delete_row(self, database_name, table_name, primaryKey, partitionKey, config=None):
         """

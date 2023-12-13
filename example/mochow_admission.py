@@ -174,7 +174,7 @@ if __name__ == "__main__":
         response = mochow_client.desc_index(database_name, table_name, "vector_idx")
         __logger.info("desc index response%s", response)
         time.sleep(10)
-        if response.index.state == u"NORMAL":
+        if response.index['state'] == u"NORMAL":
             break
     ######################################################################################################
     #               search row

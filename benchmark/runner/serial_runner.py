@@ -63,6 +63,7 @@ class SerialInsertRunner:
         log.info(f"({mp.current_process().name:16}) Start inserting embeddings in batch {Config.NUM_PER_BATCH}")
         self.db.init()
         time.sleep(50)
+        self.db.connect()
         start = time.perf_counter()
         for data_df in self.dataset:
             all_metadata = list(range(count, count + batch_size))
@@ -87,6 +88,7 @@ class SerialInsertRunner:
             count += insert_count
             if count % 100_000 == 0:
                 log.info(f"({mp.current_process().name:16}) Loaded {count} embeddings into VectorDB")
+        self.db.disconnect()
         log.info(
             f"({mp.current_process().name:16}) Finish loading all dataset into VectorDB, "
             f"dur={time.perf_counter()-start}")
@@ -159,6 +161,7 @@ class SerialSearchRunner:
         else:
             self.test_data = test_data
         self.ground_truth = ground_truth
+        self.db.connect()
 
     def search(self, args: Tuple[List, pd.DataFrame]):
         """
@@ -172,8 +175,6 @@ class SerialSearchRunner:
         
         """
         log.info(f"{mp.current_process().name:14} start search the entire test_data to get recall and latency")
-        self.db.init()
-        self.db.connect()
         test_data, ground_truth = args
 
         log.debug(f"test dataset size: {len(test_data)}")
@@ -197,7 +198,8 @@ class SerialSearchRunner:
             latencies.append(time.perf_counter() - s)
 
             gt = ground_truth[idx]
-            recalls.append(calc_recall(self.k, gt[:self.k], results))
+            log.info("results:%s gt:%s", results, gt[:self.k].astype(int).tolist())
+            recalls.append(calc_recall(self.k, gt[:self.k].astype(int).tolist(), results))
 
 
             if len(latencies) % 100 == 0:

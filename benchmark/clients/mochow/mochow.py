@@ -158,8 +158,8 @@ class Mochow(VectorDB):
         """Insert embeddings into Mochow. should call self.init() first"""
         # use the first insert_embeddings to init collection
         rows = [{"vector": embedding.tolist()} for embedding in embeddings]
-        response = self.client.insert_row(self.db_name, self.table_name,
-                rows)
+        response = self.client.upsert_row(self.db_name, self.table_name,
+                rows, keep_alive=True)
         insert_count = len(metadata)
         if kwargs.get("last_batch"):
             self._post_insert()
@@ -183,6 +183,6 @@ class Mochow(VectorDB):
         response = self.client.search_row(self.db_name, self.table_name, anns,
                 keep_alive=True)
         log.info("search response:%s", response)
-        ids = [int(item['id']) for item in response.rows]
+        ids = [int(item['id'] - 1) for item in response.rows]
         return ids
 
