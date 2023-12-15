@@ -26,6 +26,7 @@ class MochowClient(BceBaseClient):
     def __init__(self, config=None):
         """
         """
+        self.conn = None
         BceBaseClient.__init__(self, config)
     
     def connect(self, config=None):

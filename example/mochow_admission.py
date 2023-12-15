@@ -119,7 +119,7 @@ if __name__ == "__main__":
     indexes_str = json.dumps(indexes);
     __logger.info("try to create table:%s", table_name)
     response = mochow_client.create_table(database_name, table_name,
-            partition=partition, fields=fields, indexes=indexes, replication=3)
+            partition=partition, fields=fields, indexes=indexes, replication=1)
     __logger.info("create table response:%s", response)
     
     response = mochow_client.desc_table(database_name, table_name)
