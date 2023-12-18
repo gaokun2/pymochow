@@ -33,7 +33,7 @@ def generate_random_vector(dimension):
 if __name__ == "__main__":
     import logging
     
-    logging.basicConfig(filename='example.log', level=logging.INFO,
+    logging.basicConfig(filename='example.log', level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     __logger = logging.getLogger(__name__)
 
@@ -119,15 +119,18 @@ if __name__ == "__main__":
     indexes_str = json.dumps(indexes);
     __logger.info("try to create table:%s", table_name)
     response = mochow_client.create_table(database_name, table_name,
-            partition=partition, fields=fields, indexes=indexes, replication=1)
+            partition=partition, fields=fields, indexes=indexes, replication=3)
     __logger.info("create table response:%s", response)
     
-    response = mochow_client.desc_table(database_name, table_name)
-    __logger.info("desc table:%s %s", table_name, response)
+    while True:
+        response = mochow_client.desc_table(database_name, table_name)
+        __logger.info("desc table:%s %s", table_name, response)
+        time.sleep(10)
+        if response.table['state'] == u"NORMAL":
+            break
     ######################################################################################################
     #               row operation examples
     ######################################################################################################
-    time.sleep(50)
     insert_rows = tablet * 200
     ## insert row
     for i in range(insert_rows):
@@ -189,3 +192,18 @@ if __name__ == "__main__":
     }
     response = mochow_client.search_row(database_name, table_name, anns)
     __logger.info("search row response: %s", response)
+    ######################################################################################################
+    #               search after drop index
+    ######################################################################################################
+    response = mochow_client.drop_index(database_name, table_name, "vector_idx")
+    __logger.info("drop index response: %s", response)
+        
+    try:
+        response = mochow_client.desc_index(database_name, table_name, "vector_idx")
+        __logger.info("desc index response: %s", response)
+    except Exception as e:
+        __logger.info("desc index response: %s", e)
+    
+    response = mochow_client.search_row(database_name, table_name, anns)
+    __logger.info("search row response: %s", response)
+
