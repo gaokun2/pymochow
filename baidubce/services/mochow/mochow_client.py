@@ -176,7 +176,7 @@ class MochowClient(BceBaseClient):
         
         try:
             json_body = orjson.dumps(body)
-            _logger.debug("body: {}".format(json_body))
+            #_logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
         
@@ -300,7 +300,7 @@ class MochowClient(BceBaseClient):
         body["retrieveVector"] = retrieve_vector
         try:
             json_body = orjson.dumps(body)
-            _logger.debug("body: {}".format(json_body))
+            #_logger.debug("body: {}".format(json_body))
         except Exception as e:
             _logger.debug("e: {}".format(e))
         

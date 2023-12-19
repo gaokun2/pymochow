@@ -75,7 +75,7 @@ if __name__ == "__main__":
         if not table_exist:
             break
     
-    tablet = 10
+    tablet = 1
     partition = {
         "partitionType": "HASH",
         "partitionNum": tablet
@@ -206,4 +206,29 @@ if __name__ == "__main__":
     
     response = mochow_client.search_row(database_name, table_name, anns)
     __logger.info("search row response: %s", response)
+    
+    ######################################################################################################
+    #               create new index with other params
+    ######################################################################################################
+    indexes = [{
+        "indexName": "vector_idx",
+        "indexType": "HNSW",
+        "metricType": "L2",
+        "params": {
+            "M": 16,
+            "efConstruction": 200
+        },
+        "field": "vector",
+        "autoBuild": True
+    }]
+    response = mochow_client.create_index(database_name, table_name, indexes)
+    
+    while True:
+        response = mochow_client.desc_index(database_name, table_name, "vector_idx")
+        __logger.info("desc index response%s", response)
+        time.sleep(10)
+        if response.index['state'] == u"NORMAL":
+            break
 
+    response = mochow_client.search_row(database_name, table_name, anns)
+    __logger.info("search row response: %s", response)
