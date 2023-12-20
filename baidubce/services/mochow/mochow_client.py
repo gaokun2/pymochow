@@ -340,6 +340,7 @@ class MochowClient(BceBaseClient):
         body = {}
         body["database"] = database_name
         body["table"] = table_name
+        body["index"] = {}
         body["index"]["indexName"] = index_name
         body["index"]["autoBuild"] = auto_rebuild
         try:
