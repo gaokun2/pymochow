@@ -177,8 +177,8 @@ def send_request(
     :return:
     :rtype: baidubce.BceResponse
     """
-    _logger.debug(b'%s request start: %s %s, %s, %s',
-                  http_method, path, headers, params, body)
+    _logger.debug(b'%s request start: %s %s, %s',
+                  http_method, path, headers, params)
     headers = headers or {}
 
     user_agent = 'bce-sdk-python/%s/%s/%s' % (

@@ -466,7 +466,7 @@ class MochowClient(BceBaseClient):
         try:
             return bce_http_client.send_request(
                     config, conn, bce_v1_signer.sign, 
-                    [handler.parse_error, body_parser],
+                    [body_parser],
                     http_method, path, body, headers, params,
                     keep_alive=keep_alive)
         except BceHttpClientError as e:
