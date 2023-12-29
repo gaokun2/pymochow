@@ -3,10 +3,10 @@
 mkdir -p output/dist
 
 export LC_ALL="en_US.UTF-8"
-VERSION=$(awk -F"'" '$1 ~ /SDK_VERSION/ {print $2}' baidubce/__init__.py)
+VERSION=$(awk -F"'" '$1 ~ /SDK_VERSION/ {print $2}' pymochow/__init__.py)
 TARGET="mochow-python-sdk-$VERSION"
 mkdir $TARGET
-cp -rf baidubce sample setup.py README.txt $TARGET
+cp -rf pymochow example setup.py README.txt $TARGET
 zip -r ${TARGET}.zip $TARGET -x "*.pyc" "*.pyo"
 cp ${TARGET}.zip output/
 

@@ -11,13 +11,27 @@
 # and limitations under the License.
 
 """
-This module defines some common string constants.
+This module provides authentication functions for bce services.
 """
+from __future__ import absolute_import
 from builtins import str
 from builtins import bytes
-from . import protocol
+import hashlib
+import hmac
+import logging
 
+from pymochow.http import http_headers
+from pymochow import utils
+from pymochow import compat
 
-SDK_VERSION = b'0.0.1'
-URL_PREFIX = b'/v1'
-DEFAULT_ENCODING = 'UTF-8'
+_logger = logging.getLogger(__name__)
+
+def sign(credentials, http_method, path, headers, params,
+         timestamp=0, expiration_in_seconds=1800, headers_to_sign=None):
+    """
+    Create the authorization
+    """
+    result = b'Bearer account=%s&api_key=%s' % (credentials.account,
+            credentials.api_key)
+    _logger.debug('result=%s' % result)
+    return result

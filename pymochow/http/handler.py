@@ -18,10 +18,10 @@ import http.client
 from builtins import str
 from builtins import bytes
 import orjson
-from baidubce import utils
-from baidubce import compat
-from baidubce.exception import BceClientError
-from baidubce.exception import BceServerError
+from pymochow import utils
+from pymochow import compat
+from pymochow.exception import ClientError
+from pymochow.exception import ServerError
 
 def parse_json(http_response, response):
     """If the body is not empty, convert it to a python object and set as the value of
@@ -31,12 +31,12 @@ def parse_json(http_response, response):
     :type http_response: httplib.HTTPResponse
 
     :param response: general response object which will be returned to the caller
-    :type response: baidubce.BceResponse
+    :type response: pymochow.http.HttpResponse
 
     :return: always true
     :rtype bool
     """
-    body = http_response.read()
+    body = http_response.text
     if body:
         body = compat.convert_to_string(body)
         #response.__dict__.update(json.loads(body, object_hook=utils.dict_to_python_object).__dict__)
@@ -53,30 +53,30 @@ def parse_error(http_response, response):
     response.body. http_response is always closed if no error occurs.
 
     :param http_response: the http_response object returned by HTTPConnection.getresponse()
-    :type http_response: httplib.HTTPResponse
+    :type http_response: httplib.http.HTTPResponse
 
     :param response: general response object which will be returned to the caller
-    :type response: baidubce.BceResponse
+    :type response: pymochow.HttpResponse
 
     :return: false if http status code is 2xx, raise an error otherwise
     :rtype bool
 
-    :raise baidubce.exception.BceClientError: if http status code is NOT 2xx
+    :raise pymochow.exception.ClientError: if http status code is NOT 2xx
     """
-    if http_response.status // 100 == http.client.OK // 100:
+    if http_response.status_code // 100 == http.client.OK // 100:
         return False
-    if http_response.status // 100 == http.client.CONTINUE // 100:
-        raise BceClientError(b'Can not handle 1xx http status code')
+    if http_response.status_code // 100 == http.client.CONTINUE // 100:
+        raise ClientError(b'Can not handle 1xx http status code')
     bse = None
-    body = http_response.read()
+    body = http_response.text
     if body:
         d = orjson.loads(compat.convert_to_string(body))
-        bse = BceServerError(d['msg'], code=d['code'])
+        bse = ServerError(d['msg'], code=d['code'])
     else:
-        bse = BceServerError(http_response.reason, request_id=response.metadata.bce_request_id)
+        bse = ServerError(http_response.reason, request_id=response.metadata.bce_request_id)
 
     if bse is not None:
-        bse.status_code = http_response.status
+        bse.status_code = http_response.status_code
         raise bse
     else:
         raise ValueError("Error object is None")

@@ -18,7 +18,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from builtins import str, bytes
 from future.utils import iteritems, iterkeys, itervalues
-from baidubce import compat
+from pymochow import compat
 
 import os
 import re
@@ -32,8 +32,8 @@ try:
 except ImportError:
     from urlparse import urlparse
 #from Crypto.Cipher import AES
-import baidubce
-from baidubce.http import http_headers
+import pymochow
+from pymochow.http import http_headers
 
 import codecs
 
@@ -134,7 +134,7 @@ def convert_to_standard_string(input_string):
         **string**
     """
     #if isinstance(input_string, str):
-    #    return input_string.encode(baidubce.DEFAULT_ENCODING)
+    #    return input_string.encode(pymochow.DEFAULT_ENCODING)
     #elif isinstance(input_string, bytes):
     #    return input_string
     #else:
@@ -494,7 +494,7 @@ def parse_host_port(endpoint, default_protocol):
     :type: string
     :param endpoint: endpoint in config
 
-    :type: baidubce.protocol.HTTP or baidubce.protocol.HTTPS
+    :type: pymochow.protocol.HTTP or pymochow.protocol.HTTPS
     :param default_protocol: if there is no scheme in endpoint,
                               we will use this protocol as default
     :return: tuple of protocol, host, port
@@ -512,12 +512,12 @@ def parse_host_port(endpoint, default_protocol):
         raise ValueError('Invalid endpoint:%s, error:%s' % (endpoint,
             compat.convert_to_string(e)))
 
-    if parse_result.scheme == compat.convert_to_bytes(baidubce.protocol.HTTP.name):
-        protocol = baidubce.protocol.HTTP
-        port = baidubce.protocol.HTTP.default_port
-    elif parse_result.scheme == compat.convert_to_bytes(baidubce.protocol.HTTPS.name):
-        protocol = baidubce.protocol.HTTPS
-        port = baidubce.protocol.HTTPS.default_port
+    if parse_result.scheme == compat.convert_to_bytes(pymochow.protocol.HTTP.name):
+        protocol = pymochow.protocol.HTTP
+        port = pymochow.protocol.HTTP.default_port
+    elif parse_result.scheme == compat.convert_to_bytes(pymochow.protocol.HTTPS.name):
+        protocol = pymochow.protocol.HTTPS
+        port = pymochow.protocol.HTTPS.default_port
     else:
         raise ValueError('Unsupported protocol %s' % parse_result.scheme)
     host = parse_result.hostname

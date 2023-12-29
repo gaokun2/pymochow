@@ -15,7 +15,7 @@ Provides access to the BCE credentials used for accessing BCE services: BCE acce
 secret access key.
 These credentials are used to securely sign requests to BCE services.
 """
-from baidubce import compat
+from pymochow import compat
 
 class BceCredentials(object):
     """
@@ -26,8 +26,8 @@ class BceCredentials(object):
         """初始化实例对象
         
         Args:
-            access_key_id (str): 访问密钥 ID。
-            secret_access_key (str): 访问密钥密钥。
+            account (str): 访问用户。
+            api_key (str): 访问密钥。
         
         Returns:
             None

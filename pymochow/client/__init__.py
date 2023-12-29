@@ -1,5 +1,5 @@
 """
-This module defines some constants for BOS
+This module defines some constants for Client
 """
 
 URL_PREFIX = b"/"

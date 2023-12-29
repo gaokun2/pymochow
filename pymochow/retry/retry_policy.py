@@ -19,7 +19,7 @@ import logging
 from builtins import str
 from builtins import bytes
 
-from baidubce.exception import BceServerError
+from pymochow.exception import ServerError
 
 
 _logger = logging.getLogger(__name__)
@@ -102,14 +102,14 @@ class BackOffRetryPolicy(object):
             return True
 
         # Only retry on a subset of service exceptions
-        if isinstance(error, BceServerError):
+        if isinstance(error, ServerError):
             if error.status_code == http.client.INTERNAL_SERVER_ERROR:
                 _logger.debug(b'Retry for internal server error.')
                 return True
             if error.status_code == http.client.SERVICE_UNAVAILABLE:
                 _logger.debug(b'Retry for service unavailable.')
                 return True
-            if error.code == BceServerError.REQUEST_EXPIRED:
+            if error.code == ServerError.REQUEST_EXPIRED:
                 _logger.debug(b'Retry for request expired.')
                 return True
 

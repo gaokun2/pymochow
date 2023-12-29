@@ -11,27 +11,17 @@
 # and limitations under the License.
 
 """
-This module provides constants that define BCE Regions.
+This module defines some common string constants.
 """
-
 from builtins import str
 from builtins import bytes
+from . import protocol
+from .client.mochow_client import MochowClient
 
-class Region(object):
-    """
-    
-    :param object:
-    :return:
-    """
-    def __init__(self, *region_id_list):
-        """初始化 RegionIdList 实例
-        
-        Args:
-            *region_id_list (int): 待添加到 RegionIdList 中的区域ID列表
-        
-        Returns:
-            None: 无返回值
-        """
-        self.region_id_list = region_id_list
+SDK_VERSION = b'0.0.1'
+URL_PREFIX = b'/v1'
+DEFAULT_ENCODING = 'UTF-8'
 
-BEIJING = Region('bj')
+__all__ = [
+    "MochowClient",
+]

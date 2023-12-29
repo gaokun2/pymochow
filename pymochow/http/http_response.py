@@ -11,17 +11,17 @@
 # and limitations under the License.
 
 """
-This module provides a general response class for BCE services.
+This module provides a general response class for mochow services.
 """
 from future.utils import iteritems
 from builtins import str
 from builtins import bytes
-from baidubce import utils
-from baidubce import compat
-from baidubce.http import http_headers
+from pymochow import utils
+from pymochow import compat
+from pymochow.http import http_headers
 
 
-class BceResponse(object):
+class HttpResponse(object):
     """
     
     :param object:
