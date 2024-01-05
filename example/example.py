@@ -43,14 +43,12 @@ class TestMochow:
                 if e.code == ServerErrCode.TABLE_NOT_EXIST:
                     pass
             time.sleep(10)
-            if db:
-                db.drop_database()
+            db.drop_database()
 
     def create_db_and_table(self):
         """create database&table"""
         database = 'book'
         table_name = 'book_segments'
-        table_alias = 'book_segments_alias'
 
         db = self._client.create_database(database)
 
@@ -89,7 +87,7 @@ class TestMochow:
         logger.debug("table: {}".format(table.to_dict()))
 
     def upsert_data(self):
-        # 获取 Collection 对象
+        """upsert data"""
         db = self._client.database('book')
         table = db.table('book_segments')
 
@@ -131,6 +129,7 @@ class TestMochow:
         time.sleep(1)
 
     def query_data(self):
+        """query data"""
         db = self._client.database('book')
         table = db.table('book_segments')
 
@@ -141,6 +140,7 @@ class TestMochow:
         logger.debug("res: {}".format(res))
 
     def search_data(self):
+        """search data"""
         db = self._client.database('book')
         table = db.table('book_segments')
         
@@ -155,14 +155,61 @@ class TestMochow:
             params=HNSWSearchParams(ef=200, limit=10), filter="bookName='三国演义'")
         res = table.search(anns=anns)
         logger.debug("res: {}".format(res))
+
+    def delete_data(self):
+        """delete data"""
+        db = self._client.database('book')
+        table = db.table('book_segments')
+
+        primary_key = {'id': '0001'}
+        res = table.delete(primary_key=primary_key)
+        logger.debug("res: {}".format(res))
     
+    def drop_and_create_vindex(self):
+        """drop and create vindex"""
+        db = self._client.database('book')
+        table = db.table('book_segments')
+        table.drop_index("vector_idx")
+        while True:
+            time.sleep(2)
+            try:
+                index = table.describe_index("vector_idx")
+            except ServerError as e:
+                logger.debug("code: {}".format(e.code))
+                if e.code == ServerErrCode.INDEX_NOT_EXIST:
+                    break
+        
+        indexes = []
+        indexes.append(VectorIndex(index_name="vector_idx", index_type=IndexType.HNSW,
+            field="vector", metric_type=MetricType.L2, 
+            params=HNSWParams(m=16, efconstruction=200), auto_build=False))
+        table.create_indexes(indexes)
+        time.sleep(1)
+        table.modify_index(index_name="vector_idx", auto_build=True)
+        index = table.describe_index("vector_idx")
+        logger.debug("index: {}".format(index.to_dict()))
+    
+    def create_and_drop_alias(self):
+        """create and drop alias"""
+        db = self._client.database('book')
+        table = db.table('book_segments')
+        table_alias = 'book_segments_alias'
+        table.create_alias(table_alias)
+        table = db.table('book_segments')
+        logger.debug("table {}".format(table.to_dict()))
+        table.drop_alias(table_alias)
+        table = db.table('book_segments')
+        logger.debug("table {}".format(table.to_dict()))
+
     def delete_and_drop(self):
+        """delete and drop"""
         db = self._client.database('book')
 
         db.drop_table('book_segments')
         time.sleep(10)
 
         db.drop_database()
+        self._client.close()
 
 if __name__ == "__main__":
     account = 'root'
@@ -177,6 +224,8 @@ if __name__ == "__main__":
     test_vdb.upsert_data()
     test_vdb.query_data()
     test_vdb.search_data()
-    #test_vdb.update_and_delete()
+    test_vdb.delete_data()
+    test_vdb.drop_and_create_vindex()
+    test_vdb.create_and_drop_alias()
     test_vdb.delete_and_drop()
 

@@ -33,5 +33,4 @@ def sign(credentials, http_method, path, headers, params,
     """
     result = b'Bearer account=%s&api_key=%s' % (credentials.account,
             credentials.api_key)
-    _logger.debug('result=%s' % result)
     return result

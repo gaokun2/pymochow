@@ -153,6 +153,31 @@ class Table:
             new_config.merge_non_none_values(config)
             return new_config
 
+    def insert(self, rows, config=None):
+        """
+        insert rows
+        """
+        if not self.conn:
+            raise ClientError('conn is closed')
+
+        body = {}
+        body["database"] = self.database_name
+        body["table"] = self.table_name
+        body["rows"] = []
+
+        for row in rows:
+            body['rows'].append(row.to_dict())
+        json_body = orjson.dumps(body)
+        
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'row')
+
+        return self.conn.send_request(http_methods.POST,
+                path=uri,
+                body=json_body,
+                params={b'insert': b''},
+                config=config)
+    
     def upsert(self, rows, config=None):
         """
         upsert rows
@@ -237,6 +262,99 @@ class Table:
                 body=json_body,
                 params={b'search': b''},
                 config=config)
+    
+    def delete(self, primary_key, partition_key=None, config=None):
+        """
+        delete row
+        """
+        if not self.conn:
+            raise ClientError('conn is closed')
+        
+        body = {}
+        body["database"] = self.database_name
+        body["table"] = self.table_name
+        body["primaryKey"] = primary_key
+        if partition_key is not None:
+            body["partitionKey"] = partition_key
+        json_body = orjson.dumps(body)
+        
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'row')
+
+        return self.conn.send_request(http_methods.POST,
+                path=uri,
+                body=json_body,
+                params={b'delete': b''},
+                config=config)
+    
+    def create_indexes(self, indexes, config=None):
+        """
+        create indexes
+        """
+        if not self.conn:
+            raise ClientError('conn is closed')
+        
+        body = {}
+        body["database"] = self.database_name
+        body["table"] = self.table_name
+        body["indexes"] = []
+
+        for index in indexes:
+            if isinstance(index, VectorIndex):
+                body["indexes"].append(index.to_dict())
+            else:
+                raise ClientError("not supported index type")
+        
+        json_body = orjson.dumps(body)
+        
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'index')
+        
+        return self.conn.send_request(http_methods.POST,
+                path=uri,
+                body=json_body,
+                params={b'create': b''},
+                config=config)
+    
+    def modify_index(self, index_name, auto_build, config=None):
+        """
+        modify index
+        """
+        if not self.conn:
+            raise ClientError('conn is closed')
+        
+        body = {}
+        body["database"] = self.database_name
+        body["table"] = self.table_name
+        body["index"] = {
+            "indexName": index_name,
+            "autoBuild": auto_build
+        }
+        json_body = orjson.dumps(body)
+        
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'index')
+        
+        return self.conn.send_request(http_methods.POST,
+                path=uri,
+                body=json_body,
+                params={b'modify': b''},
+                config=config)
+
+    def drop_index(self, index_name, config=None):
+        """drop index"""
+        if not self.conn:
+            raise ClientError('conn is closed')
+
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'index')
+        return self.conn.send_request(http_methods.DELETE,
+                path=uri,
+                params={
+                    b'database': self.database_name,
+                    b'table': self.table_name,
+                    b'indexName': index_name},
+                config=config)
 
     def rebuild_index(self, index_name, config=None):
         """build vector index"""
@@ -288,6 +406,46 @@ class Table:
                 field=index["field"])
         else:
             raise ClientError("not supported index type:%s" % (index["indexType"]))
+        
+    def create_alias(self, alias, config=None):
+        """create alias"""
+        if not self.conn:
+            raise ClientError('conn is closed')
+        
+        body = {}
+        body["database"] = self.database_name
+        body["table"] = self.table_name
+        body["alias"] = alias
+        json_body = orjson.dumps(body)
+        
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'table')
+        
+        return self.conn.send_request(http_methods.POST,
+                path=uri,
+                body=json_body,
+                params={b'alias': b''},
+                config=config)
+    
+    def drop_alias(self, alias, config=None):
+        """drop alias"""
+        if not self.conn:
+            raise ClientError('conn is closed')
+        
+        body = {}
+        body["database"] = self.database_name
+        body["table"] = self.table_name
+        body["alias"] = alias
+        json_body = orjson.dumps(body)
+        
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'table')
+        
+        return self.conn.send_request(http_methods.POST,
+                path=uri,
+                body=json_body,
+                params={b'unalias': b''},
+                config=config)
 
 
 class Row:

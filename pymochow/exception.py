@@ -15,6 +15,7 @@ This module defines exceptions for pymochow.
 """
 
 from pymochow import utils
+from pymochow.model.enum import ServerErrCode
 from builtins import str
 from builtins import bytes
 
@@ -64,7 +65,7 @@ class ServerError(Error):
         """
         Error.__init__(self, message)
         self.status_code = status_code
-        self.code = code
+        self.code = ServerErrCode(code)
         self.request_id = request_id
     
 

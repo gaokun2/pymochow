@@ -185,7 +185,7 @@ class VectorIndex(IndexField):
             "autoBuild": self.auto_build
         }
         if self.state is not None:
-            res["state"] = state
+            res["state"] = self.state
         return res
 
 
