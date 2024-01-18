@@ -151,6 +151,7 @@ class Database:
         body["replication"] = replication
         body["partition"] = partition.to_dict()
         body["schema"] = schema.to_dict()
+        body["enableDynamicField"] = enable_dynamic_field
 
         if description is not None:
             body["description"] = description

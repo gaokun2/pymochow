@@ -59,7 +59,7 @@ class TestMochow:
         fields = []
         fields.append(Field("id", FieldType.STRING, primary_key=True,
             partition_key=True, auto_increment=False, not_null=True))
-        fields.append(Field("bookName", FieldType.STRING))
+        fields.append(Field("bookName", FieldType.STRING, not_null=True))
         fields.append(Field("author", FieldType.STRING))
         fields.append(Field("page", FieldType.UINT32))
         fields.append(Field("segment", FieldType.STRING))
