@@ -486,9 +486,10 @@ class AnnSearch:
 class HNSWSearchParams:
     "hnsw search params"
 
-    def __init__(self, ef=0, radius=0, limit=50):
+    def __init__(self, ef=0, distance_far=0, distance_near=0, limit=50):
         self._ef = ef
-        self._radius = radius
+        self._distance_far = distance_far
+        self._distance_near = distance_near
         self._limit = limit
 
     def to_dict(self):
@@ -496,7 +497,9 @@ class HNSWSearchParams:
         res = {}
         if self._ef > 0:
             res['ef'] = self._ef
-        if self._radius > 0:
-            res['radius'] = self._radius
+        if self._distance_far > 0:
+            res['distanceFar'] = self._distance_far
+        if self._distance_near > 0:
+            res['distanceNear'] = self._distance_near
         res['limit'] = self._limit
         return res

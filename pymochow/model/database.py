@@ -296,3 +296,24 @@ class Database:
             Table: table
         """
         return self.describe_table(table_name, config)
+
+    def list_table(self, config=None) -> List:
+        """list table
+        """
+        if not self.conn:
+            raise ClientError('conn is closed')
+        
+        config = self._merge_config(config)
+        uri = utils.append_uri(client.URL_PREFIX, client.URL_VERSION, 'table')
+        
+        response = self.conn.send_request(http_methods.POST,
+                path=uri,
+                params={b'list': b''},
+                body=orjson.dumps({'database': self.database_name}),
+                config=config)
+        
+        res = []
+        for table_name in response.tables:
+            res.append(self.table(table_name, config))
+        return res
+
