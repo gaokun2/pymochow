@@ -213,8 +213,8 @@ class TestMochow:
 
 if __name__ == "__main__":
     account = 'root'
-    api_key = 'mcqlwzjtxsrbsj'
-    endpoint = 'http://127.0.0.1:8511'
+    api_key = 'your api key'
+    endpoint = 'your endpoint' #example:http://127.0.0.1:8511
 
     config = Configuration(credentials=BceCredentials(account, api_key),
             endpoint=endpoint)

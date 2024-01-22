@@ -18,7 +18,7 @@ import pymochow
 
 ## 快速使用
 
-在使用Mochow SDK 之前，用户需要在百度云上创建向量数据库，以获得 API Key。API Key 是用户在调用Mochow SDK 时所需要的凭证。具体获取流程参见平台的[向量数据库使用说明文档](https://cloud.baidu.com/)。
+在使用Mochow SDK 之前，用户需要在百度智能云上创建向量数据库，以获得 API Key。API Key 是用户在调用Mochow SDK 时所需要的凭证。具体获取流程参见平台的[向量数据库使用说明文档](https://cloud.baidu.com/)。
 
 获取到 API Key 后，用户还需要传递它们来初始化Mochow SDK。 可以通过如下方式初始化Mochow SDK：
 
@@ -42,7 +42,7 @@ client = pymochow.MochowClient(config)
 
 + Databse 操作
 + Table 操作
-+ Aliase 操作
++ Alias 操作
 + Index 操作
 + Row 操作
 
