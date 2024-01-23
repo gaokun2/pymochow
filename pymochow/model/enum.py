@@ -44,6 +44,8 @@ class FieldType(Enum):
     TIME = "TIME"
     TIMESTAMP = "TIMESTAMP"
     STRING = "STRING"
+    BINARY = "BINARY"
+    UUID = "UUID"
 
     # vector field type
     FLOAT_VECTOR = "FLOAT_VECTOR"
