@@ -17,6 +17,7 @@ class IndexType(Enum):
     """index type"""
     # vector index type
     HNSW = "HNSW"
+    FLAT = "FLAT"
     
     # scalar index type
     SECONDARY_INDEX = "SECONDARY"

@@ -268,6 +268,13 @@ class Database:
                     params=HNSWParams(m=index["params"]["M"], 
                         efconstruction=index["params"]["efConstruction"]),
                     auto_build=index["autoBuild"]))
+            elif index["indexType"] == IndexType.FLAT.value:
+                indexes.append(VectorIndex(
+                    index_name=index["indexName"],
+                    index_type=IndexType.FLAT,
+                    field=index["field"],
+                    metric_type=getattr(MetricType, index["metricType"], None),
+                    auto_build=index["autoBuild"]))
             elif index["indexType"] == IndexType.SECONDARY_INDEX.value:
                 indexes.append(SecondaryIndex(
                     index_name=index["indexName"],

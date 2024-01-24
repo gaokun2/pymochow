@@ -181,9 +181,10 @@ class VectorIndex(IndexField):
             "indexType": self.index_type,
             "field": self.field,
             "metricType": self.metric_type,
-            "params": self.params.to_dict(),
             "autoBuild": self.auto_build
         }
+        if self.params is not None:
+            res["params"] = self.params.to_dict()
         if self.state is not None:
             res["state"] = self.state
         return res
