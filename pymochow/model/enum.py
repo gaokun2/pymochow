@@ -10,6 +10,8 @@ class MetricType(Enum):
     The metric type of the vector index.
     """
     L2 = "L2"
+    IP = "IP"
+    COSINE = "COSINE"
 
 
 @unique
@@ -42,7 +44,6 @@ class FieldType(Enum):
     DOUBLE = "DOUBLE"
     DATE = "DATE"
     DATETIME = "DATETIME"
-    TIME = "TIME"
     TIMESTAMP = "TIMESTAMP"
     STRING = "STRING"
     BINARY = "BINARY"
