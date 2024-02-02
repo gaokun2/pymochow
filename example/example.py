@@ -189,15 +189,15 @@ class TestMochow:
         index = table.describe_index("vector_idx")
         logger.debug("index: {}".format(index.to_dict()))
     
-    def create_and_drop_alias(self):
-        """create and drop alias"""
+    def alias_and_unalias(self):
+        """alias and unalias"""
         db = self._client.database('book')
         table = db.table('book_segments')
         table_alias = 'book_segments_alias'
-        table.create_alias(table_alias)
+        table.alias(table_alias)
         table = db.table('book_segments')
         logger.debug("table {}".format(table.to_dict()))
-        table.drop_alias(table_alias)
+        table.unalias(table_alias)
         table = db.table('book_segments')
         logger.debug("table {}".format(table.to_dict()))
 
@@ -226,6 +226,6 @@ if __name__ == "__main__":
     test_vdb.search_data()
     test_vdb.delete_data()
     test_vdb.drop_and_create_vindex()
-    test_vdb.create_and_drop_alias()
+    test_vdb.alias_and_unalias()
     test_vdb.delete_and_drop()
 

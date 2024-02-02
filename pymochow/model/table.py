@@ -12,6 +12,7 @@
 """
 This module provide table model.
 """
+import copy
 import orjson
 from pymochow import utils
 from pymochow import client
@@ -415,7 +416,7 @@ class Table:
         else:
             raise ClientError("not supported index type:%s" % (index["indexType"]))
         
-    def create_alias(self, alias, config=None):
+    def alias(self, alias, config=None):
         """create alias"""
         if not self.conn:
             raise ClientError('conn is closed')
@@ -435,8 +436,8 @@ class Table:
                 params={b'alias': b''},
                 config=config)
     
-    def drop_alias(self, alias, config=None):
-        """drop alias"""
+    def unalias(self, alias, config=None):
+        """unalias"""
         if not self.conn:
             raise ClientError('conn is closed')
         
@@ -494,20 +495,23 @@ class AnnSearch:
 class HNSWSearchParams:
     "hnsw search params"
 
-    def __init__(self, ef=0, distance_far=0, distance_near=0, limit=50):
+    def __init__(self, ef=0, distance_far=None, distance_near=None, limit=50, 
+            pruning=True):
         self._ef = ef
         self._distance_far = distance_far
         self._distance_near = distance_near
         self._limit = limit
+        self._pruning = pruning
 
     def to_dict(self):
         """to dict"""
         res = {}
         if self._ef > 0:
             res['ef'] = self._ef
-        if self._distance_far > 0:
+        if self._distance_far is not None:
             res['distanceFar'] = self._distance_far
-        if self._distance_near > 0:
+        if self._distance_near is not None:
             res['distanceNear'] = self._distance_near
         res['limit'] = self._limit
+        res['pruning'] = self._pruning
         return res

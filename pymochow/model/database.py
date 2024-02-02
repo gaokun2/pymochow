@@ -12,6 +12,7 @@
 """
 This module provide database model.
 """
+import copy
 import orjson
 import logging
 from typing import List
