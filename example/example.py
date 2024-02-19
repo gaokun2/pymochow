@@ -200,18 +200,6 @@ class TestMochow:
         table.modify_index(index_name="vector_idx", auto_build=True)
         index = table.describe_index("vector_idx")
         logger.debug("index: {}".format(index.to_dict()))
-    
-    def alias_and_unalias(self):
-        """alias and unalias"""
-        db = self._client.database('book')
-        table = db.table('book_segments')
-        table_alias = 'book_segments_alias'
-        table.alias(table_alias)
-        table = db.table('book_segments')
-        logger.debug("table {}".format(table.to_dict()))
-        table.unalias(table_alias)
-        table = db.table('book_segments')
-        logger.debug("table {}".format(table.to_dict()))
 
     def delete_and_drop(self):
         """delete and drop"""
@@ -238,6 +226,5 @@ if __name__ == "__main__":
     test_vdb.search_data()
     test_vdb.delete_data()
     test_vdb.drop_and_create_vindex()
-    test_vdb.alias_and_unalias()
     test_vdb.delete_and_drop()
 
