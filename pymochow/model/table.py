@@ -20,7 +20,7 @@ from pymochow import client
 from pymochow.http import http_methods
 from pymochow.model.schema import VectorIndex, SecondaryIndex, HNSWParams
 from pymochow.model.enum import PartitionType, ReadConsistency
-from pymochow.model.enum import IndexType, IndexState, MetricType
+from pymochow.model.enum import IndexType, IndexState, MetricType, AutoBuildPolicyType
 
 
 class Partition:
@@ -39,6 +39,50 @@ class Partition:
         }
         return res
 
+class AutoBuildTiming:
+    """
+    AutoBuildTiming
+    """
+    def __init__(self, timing):
+        self._timing = timing 
+        self._auto_build_policy_type = AutoBuildPolicyType.TIMING
+    def to_dict(self):
+        """to dict"""
+        res = {
+            "policyType": self._auto_build_policy_type,
+            "timing": self._timing
+        }
+        return res
+
+class AutoBuildPeriodical:
+    """
+    AutoBuildPeriodical
+    """
+    def __init__(self, period_s):
+        self._period_s = period_s 
+        self._auto_build_policy_type = AutoBuildPolicyType.PERIODICAL
+    def to_dict(self):
+        """to dict"""
+        res = {
+            "policyType": self._auto_build_policy_type,
+            "periodInSecond": self._period_s
+        }
+        return res
+
+class AutoBuildRowCountIncrement:
+    """
+    AutoBuildRowCountIncrement
+    """
+    def __init__(self, row_count_increment):
+        self._row_count_increment = row_count_increment 
+        self._auto_build_policy_type = AutoBuildPolicyType.ROW_COUNT_INCREMENT
+    def to_dict(self):
+        """to dict"""
+        res = {
+            "policyType": self._auto_build_policy_type,
+            "rowCountIncrement": self._row_count_increment
+        }
+        return res
 
 class Table:
     """
@@ -318,7 +362,7 @@ class Table:
                 params={b'create': b''},
                 config=config)
     
-    def modify_index(self, index_name, auto_build, config=None):
+    def modify_index(self, index_name, auto_build, auto_build_index_policy=None, config=None):
         """
         modify index
         """
@@ -332,6 +376,11 @@ class Table:
             "indexName": index_name,
             "autoBuild": auto_build
         }
+        if auto_build:
+            if not auto_build_index_policy:
+                raise ClientError('missing auto build type or auto build param')
+            else:
+                body["index"]["autoBuildPolicy"] = auto_build_index_policy.to_dict()
         json_body = orjson.dumps(body)
         
         config = self._merge_config(config)

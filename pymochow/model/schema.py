@@ -147,12 +147,14 @@ class VectorIndex(IndexField):
             field,
             metric_type,
             params=None,
-            auto_build=True,
+            auto_build=False,
+            auto_build_index_policy=None,
             **kwargs):
         super().__init__(index_name=index_name, index_type=index_type, field=field)
         self._metric_type = metric_type
         self._params = params
         self._auto_build = auto_build
+        self._auto_build_index_policy = auto_build_index_policy
         self._state = kwargs.get('state', None)
 
     @property
@@ -174,6 +176,10 @@ class VectorIndex(IndexField):
     def state(self):
         """state"""
         return self._state
+    @property
+    def auto_build_index_policy(self):
+        """state"""
+        return self._auto_build_index_policy
     
     def to_dict(self):
         """to dict"""
@@ -188,6 +194,8 @@ class VectorIndex(IndexField):
             res["params"] = self.params.to_dict()
         if self.state is not None:
             res["state"] = self.state
+        if self.auto_build_index_policy is not None:
+            res["autoBuildPolicy"] = self.auto_build_index_policy.to_dict()
         return res
 
 
