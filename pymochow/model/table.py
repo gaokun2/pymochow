@@ -39,6 +39,7 @@ class Partition:
         }
         return res
 
+
 class AutoBuildTiming:
     """
     AutoBuildTiming
@@ -69,6 +70,7 @@ class AutoBuildPeriodical:
         }
         return res
 
+
 class AutoBuildRowCountIncrement:
     """
     AutoBuildRowCountIncrement
@@ -83,6 +85,7 @@ class AutoBuildRowCountIncrement:
             "rowCountIncrement": self._row_count_increment
         }
         return res
+
 
 class Table:
     """

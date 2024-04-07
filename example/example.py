@@ -26,7 +26,8 @@ from pymochow.exception import ClientError, ServerError
 from pymochow.model.schema import Schema, Field, SecondaryIndex, VectorIndex, HNSWParams
 from pymochow.model.enum import FieldType, IndexType, MetricType, ServerErrCode
 from pymochow.model.enum import TableState, IndexState
-from pymochow.model.table import Partition, Row, AnnSearch, HNSWSearchParams
+from pymochow.model.table import Partition, Row, AnnSearch, HNSWSearchParams, AutoBuildTiming
+
 
 logging.basicConfig(filename='example.log', level=logging.DEBUG,
                 format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -197,7 +198,8 @@ class TestMochow:
             params=HNSWParams(m=16, efconstruction=200), auto_build=False))
         table.create_indexes(indexes)
         time.sleep(1)
-        table.modify_index(index_name="vector_idx", auto_build=True)
+        table.modify_index(index_name="vector_idx", auto_build=True, 
+                        auto_build_index_policy=AutoBuildTiming("2024-01-01 00:00:00"))
         index = table.describe_index("vector_idx")
         logger.debug("index: {}".format(index.to_dict()))
 
