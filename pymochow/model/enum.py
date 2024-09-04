@@ -33,6 +33,7 @@ class IndexType(Enum):
     HNSW = "HNSW"
     FLAT = "FLAT"
     PUCK = "PUCK"
+    HNSWPQ = "HNSWPQ"
     
     # scalar index type
     SECONDARY_INDEX = "SECONDARY"

@@ -18,7 +18,15 @@ import orjson
 from pymochow import utils
 from pymochow import client
 from pymochow.http import http_methods
-from pymochow.model.schema import VectorIndex, SecondaryIndex, HNSWParams, PUCKParams
+from pymochow.model.schema import (
+    VectorIndex,
+    SecondaryIndex,
+    HNSWParams, 
+    HNSWPQParams, 
+    PUCKParams,
+    DefaultAutoBuildPolicy,
+    AutoBuildTool,
+)
 from pymochow.model.enum import PartitionType, ReadConsistency
 from pymochow.model.enum import IndexType, IndexState, MetricType, AutoBuildPolicyType
 from pymochow.exception import ClientError
@@ -487,6 +495,19 @@ class Table:
                     efconstruction=index["params"]["efConstruction"]),
                 auto_build=index["autoBuild"],
                 state=getattr(IndexState, index["state"], None))
+        elif index["indexType"] == IndexType.HNSWPQ.value:
+            return VectorIndex(
+                index_name=index["indexName"],
+                index_type=IndexType.HNSWPQ,
+                field=index["field"],
+                metric_type=getattr(MetricType, index["metricType"], None),
+                params=HNSWPQParams(m=index["params"]["M"],
+                    efconstruction=index["params"]["efConstruction"],
+                    NSQ=index["params"]["NSQ"],
+                    samplerate=index["params"]["sampleRate"]),
+                auto_build=index["autoBuild"],
+                auto_build_index_policy=auto_build_index_policy,
+                state=getattr(IndexState, index["state"], None))
         elif index["indexType"] == IndexType.FLAT.value:
             return VectorIndex(
                 index_name=index["indexName"],
@@ -588,6 +609,27 @@ class HNSWSearchParams:
             res['distanceNear'] = self._distance_near
         res['limit'] = self._limit
         res['pruning'] = self._pruning
+        return res
+
+class HNSWPQSearchParams:
+    "hnswpq search params"
+
+    def __init__(self, ef=None, distance_far=None, distance_near=None, limit=50):
+        self._ef = ef
+        self._distance_far = distance_far
+        self._distance_near = distance_near
+        self._limit = limit
+
+    def to_dict(self):
+        """to dict"""
+        res = {}
+        if self._ef is not None:
+            res['ef'] = self._ef
+        if self._distance_far is not None:
+            res['distanceFar'] = self._distance_far
+        if self._distance_near is not None:
+            res['distanceNear'] = self._distance_near
+        res['limit'] = self._limit
         return res
 
 

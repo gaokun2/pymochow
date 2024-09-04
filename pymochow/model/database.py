@@ -22,7 +22,16 @@ from pymochow import utils
 from pymochow import client
 from pymochow.http import http_methods
 from pymochow.model.table import Table, Partition
-from pymochow.model.schema import Schema, Field, VectorIndex, SecondaryIndex, HNSWParams, PUCKParams
+from pymochow.model.schema import (
+    Schema, 
+    Field, 
+    VectorIndex, 
+    SecondaryIndex, 
+    HNSWParams, 
+    HNSWPQParams, 
+    PUCKParams, 
+    AutoBuildTool,
+)
 from pymochow.model.enum import IndexType, MetricType, TableState
 
 _logger = logging.getLogger(__name__)
@@ -269,7 +278,20 @@ class Database:
                     metric_type=getattr(MetricType, index["metricType"], None),
                     params=HNSWParams(m=index["params"]["M"], 
                         efconstruction=index["params"]["efConstruction"]),
-                    auto_build=index["autoBuild"]))
+                    auto_build=index["autoBuild"],
+                    auto_build_index_policy=auto_build_index_policy))
+            elif index["indexType"] == IndexType.HNSWPQ.value:
+                indexes.append(VectorIndex(
+                    index_name=index["indexName"],
+                    index_type=IndexType.HNSWPQ,
+                    field=index["field"],
+                    metric_type=getattr(MetricType, index["metricType"], None),
+                    params=HNSWPQParams(m=index["params"]["M"],
+                        efconstruction=index["params"]["efConstruction"],
+                        NSQ=index["params"]["NSQ"],
+                        samplerate=index["params"]["sampleRate"]),
+                    auto_build=index["autoBuild"],
+                    auto_build_index_policy=auto_build_index_policy))
             elif index["indexType"] == IndexType.FLAT.value:
                 indexes.append(VectorIndex(
                     index_name=index["indexName"],
